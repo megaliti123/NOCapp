@@ -76,10 +76,12 @@ export class CheckService implements CheckServiceUseCase {
             }
 
             // Crear log de verificación exitosa con severidad baja
-            const successLog = new logEntity(
-                LogSeverity.low, 
-                `✅ Service check SUCCESSFUL for ${url} - Status: ${req.status}`
-            );
+            const successLog = new logEntity({
+                level: LogSeverity.low, 
+                message: `✅ Service check SUCCESSFUL for ${url} - Status: ${req.status}`,
+                createdAt: new Date(),
+                origin: 'CheckService'
+            });
 
             // Persistir log de éxito
             await this.logRepository.saveLog(successLog);
@@ -92,11 +94,19 @@ export class CheckService implements CheckServiceUseCase {
             return true;
 
         } catch (error) {
+
+            const errorMessage= `❌ Service check FAILED for ${url}: ${error}`
+
             // Construir mensaje de error detallado
-            const errorMessage = `❌ Service check FAILED for ${url}: ${error}`;
+            const errorLog = new logEntity({
+                level: LogSeverity.high,
+                message: errorMessage,
+                createdAt: new Date(),
+                origin: 'CheckService'
+            });
 
             // Crear log de error con severidad alta para alertas
-            const errorLog = new logEntity(LogSeverity.high, errorMessage);
+            await this.logRepository.saveLog(errorLog);
 
             // Persistir log de error
             await this.logRepository.saveLog(errorLog);

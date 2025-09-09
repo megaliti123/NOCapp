@@ -1,7 +1,7 @@
 // IMPORTANTE: dotenv debe importarse ANTES que cualquier otro módulo
 import 'dotenv/config';
 import { server } from './presentation/server';
-import { envs } from './config/envx.plugins';
+import { envs } from './config/envs.plugin/envs.plugins';
 
 /**
  * Punto de entrada principal de la aplicación NOC (Network Operations Center)

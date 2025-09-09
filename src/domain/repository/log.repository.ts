@@ -13,7 +13,6 @@ import { logEntity, LogSeverity } from "../entities/log.enity";
  * - Intercambiar implementaciones de persistencia
  */
 export abstract class LogRepository {
-
     /**
      * Persiste un nuevo log en el sistema de almacenamiento
      * 

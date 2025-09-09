@@ -9,6 +9,13 @@ export enum LogSeverity {
     high = "high"       // Logs críticos que requieren atención inmediata
 }
 
+export interface logEntityOptions {
+    level: LogSeverity;
+    message: string;
+    createdAt?: Date;
+    origin: string;
+}
+
 /**
  * Entidad que representa un log en el dominio del sistema
  * Encapsula toda la información necesaria de un evento de log
@@ -24,15 +31,19 @@ export class logEntity {
     /** Timestamp de cuando se creó el log */
     public createdAt: Date;
 
+    public origin: string;
+
     /**
      * Constructor para crear una nueva instancia de log
      * @param level - Nivel de severidad del log
      * @param message - Descripción del evento a registrar
      */
-    constructor(level: LogSeverity, message: string) {
+    constructor(options: logEntityOptions) {
+        const {message, level, createdAt, origin} = options;
         this.level = level;
         this.message = message;
-        this.createdAt = new Date(); // Marca de tiempo automática
+        this.createdAt = createdAt || new Date(); // Marca de tiempo automática
+        this.origin = origin;
     }
 
     /**
@@ -44,15 +55,20 @@ export class logEntity {
      */
     static fromJson = (json: string): logEntity => {
         // Parsear el JSON y extraer las propiedades
-        const { message, level, createdAt } = JSON.parse(json);
+        const { message, level, createdAt, origin } = JSON.parse(json);
 
         // Validar que todas las propiedades requeridas estén presentes
-        if (!message || !level || !createdAt) {
+        if (!message || !level || !createdAt || !origin) {
             throw new Error('Invalid log JSON');
         }
 
         // Crear nueva instancia con los datos deserializados
-        const log = new logEntity(level, message);
+        const log = new logEntity({
+            level,
+            message,
+            createdAt,
+            origin
+        });
         
         // Restaurar la fecha original del log
         log.createdAt = createdAt;
